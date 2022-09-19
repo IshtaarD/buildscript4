@@ -1,5 +1,6 @@
 import requests
 import json
+import inquirer
 
 
 # reads the API KEY that is stored in a separate file. 
@@ -61,9 +62,9 @@ print('--------------------------------------------------------')
 
 # asks the user to select how indecisive they are and assigns the number of choices he/she gets to the number parameter
 scale = int(input('\nFinally, how indecisive are you from a scale of 1 to 3. \n 1 = Very Decisive \n 2 = In Between \n 3 = Very Indecisive  \n'))
-choices = {1 : 7, 2 : 3, 3 : 1 }
+choices = {1 : 4, 2 : 2, 3 : 1 }
 num_of_choices = choices[scale]
-print(f'You will get {num_of_choices} choices!')
+
 
 
 url = f"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&maxReadyTime={time}&number={num_of_choices}&instructionsRequired=true&excludeIngredients={allergies}&diet={user_diet}&includeIngredients={must_have}"
@@ -75,8 +76,34 @@ response = requests.request("GET", url, headers=headers, data=payload)
 recipes = json.loads(response.text)
 
 recipes = recipes['results']
-for recipe in recipes:
-    print(recipe['title'])
+total_options = len(recipes)
+
+if total_options > 1:
+    print(f'You will get {total_options} available options!')
+    questions = [
+    inquirer.List('dish',
+                message="Which of these dishes would you like to make?",
+                choices=[recipe['title'] for recipe in recipes],
+            ),
+    ]
+    answers = inquirer.prompt(questions)
+    dish = answers['dish']
+    print(f'You are making {dish}!' )
+else:
+    dish = recipes[0]['title']
+    print(f'You are making {dish}!')
+
+
+for recipe in recipes: 
+    if dish == recipe['title']:
+        id = recipe['id']
+       
+
+
+
+
+
+
 
 
 
