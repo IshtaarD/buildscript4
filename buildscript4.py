@@ -97,7 +97,28 @@ else:
 for recipe in recipes: 
     if dish == recipe['title']:
         id = recipe['id']
-       
+
+url = f'https://api.spoonacular.com/recipes/{id}/information?apiKey={apiKey}'
+
+response = requests.request("GET", url)
+recipe_info = json.loads(response.text)
+
+select_recipe_info = {}
+
+select_recipe_info['id'] = id
+select_recipe_info['title'] = recipe['title']
+select_recipe_info['Total Prep and Cook Time'] = recipe_info['readyInMinutes']
+select_recipe_info['servings'] = recipe_info['servings']
+select_recipe_info['Source URL'] = recipe_info['sourceUrl']
+select_recipe_info['Spoonacular URL'] = recipe_info['spoonacularSourceUrl']
+
+print(select_recipe_info)
+
+
+
+
+
+
 
 
 
