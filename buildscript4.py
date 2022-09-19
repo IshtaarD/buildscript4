@@ -1,4 +1,6 @@
 import requests
+import json
+
 
 # reads the API KEY that is stored in a separate file. 
 try:
@@ -70,7 +72,23 @@ payload={}
 headers = {}
 
 response = requests.request("GET", url, headers=headers, data=payload)
+recipes = json.loads(response.text)
 
+recipes = recipes['results']
+for recipe in recipes:
+    print(recipe['title'])
+
+
+
+#recipe_list = response.text
+#print(recipe_list)
+#print(recipe_list["results"])
+
+#recipes = r['results']
+#print(recipes)
+#print('Your recipe choices are: ')
+#for recipe in recipes: 
+    #print(recipe['title'])
 
 
 
