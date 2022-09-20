@@ -1,6 +1,7 @@
 import requests
 import json
 import inquirer
+import subprocess
 
 
 # reads the API KEY that is stored in a separate file. 
@@ -89,10 +90,12 @@ if total_options > 1:
     answers = inquirer.prompt(questions)
     dish = answers['dish']
     print(f'You are making {dish}!' )
-else:
+elif total_options == 1:
     dish = recipes[0]['title']
     print(f'You are making {dish}!')
-
+else: 
+    print("No recipes found with these choices. Please start the program again! ")
+    exit(0)
 
 for recipe in recipes: 
     if dish == recipe['title']:
@@ -106,13 +109,25 @@ recipe_info = json.loads(response.text)
 select_recipe_info = {}
 
 select_recipe_info['id'] = id
-select_recipe_info['title'] = recipe['title']
-select_recipe_info['Total Prep and Cook Time'] = recipe_info['readyInMinutes']
+select_recipe_info['title'] = recipe_info['title']
+select_recipe_info['cooktime'] = recipe_info['readyInMinutes']
 select_recipe_info['servings'] = recipe_info['servings']
-select_recipe_info['Source URL'] = recipe_info['sourceUrl']
-select_recipe_info['Spoonacular URL'] = recipe_info['spoonacularSourceUrl']
+select_recipe_info['sourceUrl'] = recipe_info['sourceUrl']
+select_recipe_info['spoonacularUrl'] = recipe_info['spoonacularSourceUrl']
 
-print(select_recipe_info)
+
+
+with open('selectedRecipe.json', 'w') as file:
+    file.write(json.dumps(select_recipe_info))
+file.close()
+
+#with open('selectedRecipe.json', 'r') as file:
+    #print(file.read())
+
+
+subprocess.call("./buildscript4bash.sh")
+
+
 
 
 
