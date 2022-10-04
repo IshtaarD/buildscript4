@@ -34,7 +34,7 @@ if letter in diets.keys():
     user_diet = diets[letter]
     print(f'You have a {user_diet.upper()} diet.') 
 #if the user does not have any dietary restrictions, it removes the parameter from the url
-if letter == 'no': 
+if letter.lower() == 'no': 
     user_diet = ''
     print('You have no dietary restrictions!')
    
@@ -69,7 +69,6 @@ num_of_choices = choices[scale]
 
 
 url = f"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&maxReadyTime={time}&number={num_of_choices}&instructionsRequired=true&excludeIngredients={allergies}&diet={user_diet}&includeIngredients={must_have}"
-#print(url)
 payload={}
 headers = {}
 
@@ -79,8 +78,10 @@ recipes = json.loads(response.text)
 recipes = recipes['results']
 total_options = len(recipes)
 
+# if the number of recipes returned from the search parameters in the url is greater than 1, let the 
 if total_options > 1:
     print(f'You will get {total_options} available options!')
+    # inquirer.List creates an interactive selecting process of recipe choices for the user. 
     questions = [
     inquirer.List('dish',
                 message="Which of these dishes would you like to make?",
@@ -106,6 +107,7 @@ url = f'https://api.spoonacular.com/recipes/{id}/information?apiKey={apiKey}'
 response = requests.request("GET", url)
 recipe_info = json.loads(response.text)
 
+#creates an empty dictionary and appends key-value pairs to it. 
 select_recipe_info = {}
 
 select_recipe_info['id'] = id
@@ -116,54 +118,10 @@ select_recipe_info['sourceUrl'] = recipe_info['sourceUrl']
 select_recipe_info['spoonacularUrl'] = recipe_info['spoonacularSourceUrl']
 
 
-
+# creates a json file with writing permissions and adds the dictionary key pair values in json format to the file. 
 with open('selectedRecipe.json', 'w') as file:
     file.write(json.dumps(select_recipe_info))
 file.close()
 
-#with open('selectedRecipe.json', 'r') as file:
-    #print(file.read())
-
-
+# calls the bash script 'buildscript4bash' and allows it to run in the python script
 subprocess.call("./buildscript4bash.sh")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#recipe_list = response.text
-#print(recipe_list)
-#print(recipe_list["results"])
-
-#recipes = r['results']
-#print(recipes)
-#print('Your recipe choices are: ')
-#for recipe in recipes: 
-    #print(recipe['title'])
-
-
-
-#print('Feeling adventurous? Type "yes" for a random recipe!')
-#GET https://api.spoonacular.com/recipes/random
-
-
-
-#while answer1 != 'yes' and answer1 != 'no':
-   # answer1 = input('Please enter a valid answer.') 
-
-
-#allergies = []
-   #for allergy in answer2.split():
-        #allergies.append(allergy)
