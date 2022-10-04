@@ -1,3 +1,16 @@
+# Ishtaar Desravines
+# Build Script #4
+# Due September 15, 2022
+
+# Objective: This program uses the Spoonacular API to access a database of recipe information to give the user meal options to select from. 
+
+# Restrictions: 
+# I. Must have your own API key from Spoonacular. Make an account at https://spoonacular.com/food-api.
+# II. API key that is stored in a file must be in the same directory as this file. 
+
+
+
+#calling various modules to be used in the script below. 
 import requests
 import json
 import inquirer
@@ -14,33 +27,36 @@ except:
     exit(1)
 
 
+
+
 print('WELCOME TO THE RECIPE HELPER')
-print('-------------------------------------------')
+print('-----------------------------------------')
+
 
 # asks the user if they have any dietary restrictions
 print("\nI'm here to help you find something to eat tonight! \n Do you have any of these dietary restrictions? ")
 
-# created a dictionary with the dietary options.
+# creates a dictionary with the dietary options.
 diets = { 'A' : 'Gluten Free', 'B' : 'Ketogenic', 'C': 'Vegetarian', 'D' : 'Pescetarian'}
 
 #iterates through the dictionary to print out the options for the user
 for letter, diet in diets.items(): 
     print(f'{letter}. {diet}')
-    
-# maybe rename variable user_diet to letter
-# asks the user for a letter selection and outputs their dietary restriction to get the diet parameter
+
+
+# asks the user for a letter selection and assigns their dietary restriction the 'diet' parameter that will be used in the url
 letter = input('Please select your diet by letter or type "No": ')
-if letter in diets.keys(): 
+if letter in diets.keys():  
     user_diet = diets[letter]
     print(f'You have a {user_diet.upper()} diet.') 
-#if the user does not have any dietary restrictions, it removes the parameter from the url
+# if the user does not have any dietary restrictions, it leaves the parameter 'diet' in the url blank. 
 if letter.lower() == 'no': 
     user_diet = ''
     print('You have no dietary restrictions!')
    
 print('-----------------------------------------------')
 
-#asks user for the includeIngredients parameter. 
+# asks user for a main ingredient they want in their dish and assigns it to a variable that will be used for the includeIngredients parameter
 must_have = input('Choose a main ingredient you want in your dish: ')
 
 # asks the user if allergic to any ingredients to get the exludeIngredients parameter.
@@ -50,29 +66,27 @@ answer = input('\nDo you have any food allergies? (yes/no) ')
 if answer.lower() == 'yes':
     allergies = input('Please enter all ingredients you are allergic to separated by commas: ')
     print(f'You are allergic to: {allergies.upper()}')
-# if the user does not have any allergies, prints "You have no allergies"  
+# if the user does not have any allergies, prints "You have no allergies" and leaves the excludeIngredients parameter blank. 
 if answer == 'no': 
     allergies = ''
     print('You have no allergies!')
 print('---------------------------------------------------------')
 
-# asks the user how much time they have to make their meal to get the maxReadyTime parameter
+# asks the user how much time they have to make their meal and assigns the value to the time variable that will be used for the maxReadyTime parameter
 time = input('\nHow much time do you have to cook and prep in minutes? ')
 
 print('--------------------------------------------------------')
 
-# asks the user to select how indecisive they are and assigns the number of choices he/she gets to the number parameter
+# asks the user to select how indecisive they are ona scale and assigns the number of choices he/she gets to the number parameter
 scale = int(input('\nFinally, how indecisive are you from a scale of 1 to 3. \n 1 = Very Decisive \n 2 = In Between \n 3 = Very Indecisive  \n'))
 choices = {1 : 4, 2 : 2, 3 : 1 }
 num_of_choices = choices[scale]
 
 
-
+# GET request 
 url = f"https://api.spoonacular.com/recipes/complexSearch?apiKey={apiKey}&maxReadyTime={time}&number={num_of_choices}&instructionsRequired=true&excludeIngredients={allergies}&diet={user_diet}&includeIngredients={must_have}"
-payload={}
-headers = {}
-
-response = requests.request("GET", url, headers=headers, data=payload)
+print(url)
+response = requests.request("GET", url)
 recipes = json.loads(response.text)
 
 recipes = recipes['results']
@@ -81,7 +95,7 @@ total_options = len(recipes)
 # if the number of recipes returned from the search parameters in the url is greater than 1, let the 
 if total_options > 1:
     print(f'You will get {total_options} available options!')
-    # inquirer.List creates an interactive selecting process of recipe choices for the user. 
+    # inquirer.List creates an interactive selecting process of recipe choices for the user. It lists the food choices 
     questions = [
     inquirer.List('dish',
                 message="Which of these dishes would you like to make?",
